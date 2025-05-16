@@ -1,0 +1,12 @@
+$base-color: #006699;
+$lighter:  #008ed3;
+$light: #07abfb;
+$extralight: #1cb3fb;
+$darker: #00537b;
+$dark: #003f5d;
+
+@import "elementui.scss";
+@import 'reset-css/sass/reset';
+@import "generic.scss";
+@import "layout.scss";
+

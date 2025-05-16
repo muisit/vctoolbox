@@ -1,0 +1,126 @@
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+    $colors: (
+        'primary': (
+            'base': $base-color,
+        ),
+    ),
+    $border-color: (
+        (
+            '': $base-color,
+            'light': $light,
+            'lighter': $lighter,
+            'extra-light': $extralight,
+            'dark': $dark,
+            'darker': $darker
+        )
+    ),
+    $font-family: (
+        (
+          '': "'Helvetica Neue', Helvetica, Arial, sans-serif"
+        )
+    ),
+    $checkbox: (
+        (
+            'input-border': "var(--el-border-width) var(--el-border-style) var(--el-border-color-lighter)"
+        )
+    ),
+    $header: (
+        'height': 20px
+    ),
+    $footer: (
+        'height': 40px
+    ),
+    $main: (
+        'padding': '10px 20px'
+    ),
+    $radio: (
+        (
+            'input-border': "var(--el-border-width) var(--el-border-style) var(--el-border-color-lighter)"
+        )
+    ),
+    $select: (
+        (
+            'input-border': "var(--el-border-width) var(--el-border-style) var(--el-border-color-lighter)"
+        )
+    ),
+    $input: (
+        (
+            'input-border': "var(--el-border-width) var(--el-border-style) var(--el-border-color-lighter)",
+            'focus-color': "var(--el-border-color-lighter)",
+            'border-color': $extralight,
+        )
+    ),
+    $input-disabled: (
+        (
+            'border': "var(--el-border-color-extra-light)"
+        )
+    ),
+    $dialog: (
+//          'width': 50%,
+//          'margin-top': 15vh,
+          'bg-color': $base-color,
+//          'box-shadow': getCssVar('box-shadow'),
+          'title-font-size': getCssVar('font-size-x-large'),
+//          'content-font-size': 14px,
+//          'font-line-height': getCssVar('font-line-height-primary'),
+//          'padding-primary': 16px,
+//          'border-radius': getCssVar('border-radius-base'),
+    ),
+);
+
+
+@use "element-plus/theme-chalk/src/index.scss" as *;
+
+#app {
+    .main-page {
+
+        .el-switch--small {
+            height: 20px !important;
+        }
+
+        .el-dialog__header {
+            background-color: var(--el-color-primary);
+            display:flex;
+            flex-direction:row;
+            justify-content: center;
+
+            .el-dialog__title {
+                color:white;
+                font-size: x-large;
+            }
+        }
+
+        .el-dialog__body {
+            background-color: white;
+            border-radius: 5px 5px 0px 0px;
+            padding: 10px;
+        }
+
+        .el-dialog__footer {
+            background-color: white;
+            border-radius: 0px 0px 5px 5px;
+            border: 1px solid var(--el-color-primary);
+            border-width: 1px 0px 0px 0px;
+            padding: 10px;
+        }
+
+
+        .el-form {
+            .el-form-item {
+                margin-bottom: 0px;
+
+                .el-form-item__label {
+                    height: 24px;
+                    line-height: 24px;
+                    width: 120px;
+                    font-weight: bold;
+                    justify-content: flex-start;
+                }
+
+                .el-form-item__content {
+                    line-height: 24px;
+                }
+            }
+        }
+    }
+}
