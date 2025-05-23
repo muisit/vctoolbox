@@ -2296,7 +2296,7 @@ uint8arrays@3.1.1:
   dependencies:
     multiformats "^9.4.2"
 
-uint8arrays@^4.0.6:
+uint8arrays@4.0.10, uint8arrays@^4.0.6:
   version "4.0.10"
   resolved "https://registry.yarnpkg.com/uint8arrays/-/uint8arrays-4.0.10.tgz#3ec5cde3348903c140e87532fc53f46b8f2e921f"
   integrity sha512-AnJNUGGDJAgFw/eWu/Xb9zrVKEGlwJJCaeInlf3BkecE/zcTobk5YXYIPNQJO1q5Hh1QZrQQHf0JvcHqz2hqoA==
