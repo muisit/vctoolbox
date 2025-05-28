@@ -22,7 +22,8 @@ const disclosureFrame = ref<DisclosedAttribute[]>([]);
 async function decodeValue() {
     message.value = '';
     try {
-        const parts = inputvalue.value.split('.');
+        const token = inputvalue.value.replace(/\s+/g, '');
+        const parts = token.split('.');
         if (parts && parts.length == 3) {
             const lastPart = parts[2].split('~');
             signaturevalue.value = lastPart[0];

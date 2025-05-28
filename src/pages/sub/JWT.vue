@@ -20,14 +20,16 @@ function encodeValue() {
 
         inputvalue.value = headerpart + '.' + payloadpart + '.' + signaturevalue.value;
     }
-    catch (e) {
+    catch (e:any) {
         message.value = e.toString();
     }
 }
 async function decodeValue() {
     message.value = '';
     try {
-        const parts = inputvalue.value.match(/^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)$/);
+        // get rid of all lws
+        const token = inputvalue.value.replace(/\s+/g, '');
+        const parts = token.match(/^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)$/);
         if (parts && parts.length == 4) {
             signaturevalue.value = parts[3];
 
@@ -44,7 +46,7 @@ async function decodeValue() {
             try {
                 key = await Factory.resolve(payload.iss);
             }
-            catch (e) {
+            catch (e:any) {
                 console.log(e);
                 try {
                     key = await Factory.resolve(header.kid);
@@ -67,7 +69,7 @@ async function decodeValue() {
             }
         }
     }
-    catch(e) {
+    catch(e:any) {
         message.value = e.toString();
     }
 }

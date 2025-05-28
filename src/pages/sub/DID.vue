@@ -7,20 +7,20 @@ const outputvalue = ref('');
 const message = ref('');
 const keytype=ref('');
 
-function encodeValue() {
+async function encodeValue() {
     message.value = '';
     inputvalue.value = '';
     try {
         // if the input string happens to be json, minify it first
-        const key = Factory.createFromJWK(JSON.parse(outputvalue.value));
+        const key = await Factory.createFromJWK(JSON.parse(outputvalue.value));
         if (keytype.value == 'did:key') {
-            inputvalue.value = Factory.toDIDKey(key);
+            inputvalue.value = await Factory.toDIDKey(key);
         }
         else {
-            inputvalue.value = Factory.toDIDJWK(key);
+            inputvalue.value = await Factory.toDIDJWK(key);
         }
     }
-    catch (e) {
+    catch (e:any) {
         message.value = e.toString();
     }
 }
@@ -35,24 +35,13 @@ async function decodeValue() {
             keytype.value = inputvalue.value.startsWith('did:key:') ? 'did:key' :
                                 (inputvalue.value.startsWith('did:jwk:') ? 'did:jwk' : 
                             (inputvalue.value.startsWith('did:web:') ? 'did:web' : ''));
-            outputvalue.value = JSON.stringify(key.toJWK(), null, 4);
+            outputvalue.value = JSON.stringify(await key.toJWK(), null, 4);
         }
         else {
             message.value = "Could not decode key";
         }
-
-        // if it is JSON, prettify it
-        try {
-            const jsonvalue = JSON.parse(outputvalue.value);
-            if (jsonvalue && Object.keys(jsonvalue).length > 0) {
-                outputvalue.value = JSON.stringify(jsonvalue, null, 4);
-            }
-        }
-        catch (e) {
-            message.value = e.toString();
-        }
     }
-    catch(e) {
+    catch(e:any) {
         message.value = e.toString();
     }
 }

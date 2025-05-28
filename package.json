@@ -20,7 +20,7 @@
     "dependencies": {
         "@eonasdan/tempus-dominus": "^6.2.4",
         "@fortawesome/fontawesome-free": "^6.4.0",
-        "@muisit/cryptokey": "1.0.11",
+        "@muisit/cryptokey": "^1.1.1",
         "@noble/hashes": "^1.8.0",
         "@sd-jwt/core": "^0.10.0",
         "@sd-jwt/crypto-nodejs": "^0.10.0",

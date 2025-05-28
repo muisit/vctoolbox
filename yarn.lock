@@ -94,14 +94,15 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.0.tgz#3188bcb273a414b0d215fd22a58540b989b9409a"
   integrity sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==
 
-"@muisit/cryptokey@1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@muisit/cryptokey/-/cryptokey-1.0.11.tgz#f4e6685280ae3ee66eae020e383918663b154ea8"
-  integrity sha512-UA7j1XJqrblwcejDKbS/lQIx6p9FQJGt8IDPxMgIGkd+ta9q8E/9SKmWF/096zogaHQBWLnM0/O8DTUntrpf/Q==
+"@muisit/cryptokey@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@muisit/cryptokey/-/cryptokey-1.1.1.tgz#597aa9a467984738af25d8877bff77f878bf9379"
+  integrity sha512-Hn4CsxMquVXeG/C3ZL/JRNxg551+vxQhwNmvI4QIYhP43qnZDy5mKxE6cQmSeIfkJbTOYSTcTiLElmR9up2x9g==
   dependencies:
     "@veramo/utils" "6.0.0"
     did-jwt "^8.0.11"
     did-resolver "^4.1.0"
+    jose "^6.0.11"
     multiformats "^13.3.2"
 
 "@multiformats/base-x@^4.0.1":
@@ -1576,6 +1577,11 @@ isomorphic-timers-promises@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/isomorphic-timers-promises/-/isomorphic-timers-promises-1.0.1.tgz#e4137c24dbc54892de8abae3a4b5c1ffff381598"
   integrity sha512-u4sej9B1LPSxTGKB/HiuzvEQnXH0ECYkSVQU39koSwmFAxhlEAFl9RdTvLv4TOTQUgBS5O3O5fwUxk6byBZ+IQ==
+
+jose@^6.0.11:
+  version "6.0.11"
+  resolved "https://registry.yarnpkg.com/jose/-/jose-6.0.11.tgz#0b7ea8b3b21a1bda5e00255a044c3a0e43270882"
+  integrity sha512-QxG7EaliDARm1O1S8BGakqncGT9s25bKL1WSf6/oa17Tkqwi8D2ZNglqCF+DsYF88/rV66Q/Q2mFAy697E1DUg==
 
 js-base64@^3.7.6:
   version "3.7.7"
