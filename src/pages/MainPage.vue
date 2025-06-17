@@ -14,6 +14,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
     case 'did':
     case 'issuer':
     case 'verifier':
+    case 'statuslist':
     case 'sdjwt':
         pageName.value = key;
         break;
@@ -33,6 +34,7 @@ import DID from './sub/DID.vue';
 import Issuer from './sub/Issuer.vue';
 import Verifier from './sub/Verifier.vue';
 import SDJWT from './sub/SDJWT.vue';
+import StatusList from './sub/StatusList.vue';
 </script>
 <template>
     <el-container class="main">
@@ -59,6 +61,7 @@ import SDJWT from './sub/SDJWT.vue';
                     </el-sub-menu>
                     <el-menu-item index="issuer">Issuer</el-menu-item>
                     <el-menu-item index="verifier">Verifier</el-menu-item>
+                    <el-menu-item index="statuslist">StatusList</el-menu-item>
                 </el-menu>                
             </el-aside>
             <el-main>
@@ -71,6 +74,7 @@ import SDJWT from './sub/SDJWT.vue';
                 <DID v-if="pageName == 'did'" />
                 <Issuer v-if="pageName == 'issuer'" />
                 <Verifier v-if="pageName == 'verifier'" />
+                <StatusList v-if="pageName == 'statuslist'" />
                 <SDJWT v-if="pageName == 'sdjwt'" />
             </el-main>
         </el-container>
