@@ -10,6 +10,9 @@ const grant = ref('');
 const requestId = ref('');
 const requestUri = ref('');
 const allLabels = ref<string[]>([]);
+const uuid = ref('');
+const statlist = ref('');
+const filter = ref('');
 const timer = ref<any>(null);
 
 onMounted(() => {
@@ -28,6 +31,7 @@ async function generate()
 {
     add();
     const url = agent.value + '/api/create-offer';
+    uuid.value = '';
     let creds = [credentials.value];
     if (creds[0].indexOf(',') > 0) {
         creds = creds[0].split(',').filter((v) => v != '');
@@ -38,6 +42,7 @@ async function generate()
         credentialDataSupplierInput: JSON.parse(data.value)
     };
 
+    requests.value = [];
     const response = await fetch(url, {
         method:'POST',
         body: JSON.stringify(request),
@@ -63,7 +68,9 @@ function add()
         token: token.value,
         credential: credentials.value,
         data: data.value,
-        grant: grant.value
+        grant: grant.value,
+        statlist: statlist.value,
+        filter: filter.value
     };
     localStorage.setItem(label.value, JSON.stringify(dataPackage));
 
@@ -88,6 +95,9 @@ function remove()
         grant.value = '';
         data.value = '';
         credentials.value = '';
+        statlist.value = '';
+        uuid.value = '';
+        filter.value = '';
     }
 }
 
@@ -97,6 +107,7 @@ function startTimer()
         clearInterval(timer.value);
         timer.value = null;
     }
+    isWaiting.value = false;
 
     timer.value = setInterval(callCheckApi, 2000);
 }
@@ -120,6 +131,7 @@ async function callCheckApi()
     isWaiting.value = false;
     status.value = response.status;
     requests.value = response.requests;
+    uuid.value = response.uuid;
 
     if (response.status == 'CREDENTIAL_ISSUED') {
         clearInterval(timer.value);
@@ -139,7 +151,78 @@ function selectPreset()
         grant.value = item.grant;
         data.value = item.data;
         credentials.value = item.credential;
+        statlist.value = item.statlist;
+        filter.value = item.filter;
     }
+}
+
+async function revoke()
+{
+    if (isWaiting.value) {
+        return;
+    }
+    if (uuid.value == '') {
+        status.value = 'No credential UUID found';
+    }
+    else {
+        const url = agent.value + '/api/revoke-credential';
+        isWaiting.value = true;
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ uuid: uuid.value, state: 'revoke', list: statlist.value }),
+            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+        })
+        .then((r) => r.json());
+
+    
+        isWaiting.value = false;
+        status.value = response.status;
+        requests.value = [response];
+    }
+}
+
+async function unrevoke()
+{
+    if (isWaiting.value) {
+        return;
+    }
+    if (uuid.value == '') {
+        status.value = 'No credential UUID found';
+    }
+    else {
+        const url = agent.value + '/api/revoke-credential';
+        isWaiting.value = true;
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify({ uuid: uuid.value, state: 'unrevoke', list: statlist.value }),
+            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+        })
+        .then((r) => r.json());
+
+    
+        isWaiting.value = false;
+        status.value = response.status;
+        requests.value = [response];
+    }
+}
+
+
+async function listcreds()
+{
+    if (isWaiting.value) {
+        return;
+    }
+    const url = agent.value + '/api/list-credentials';
+    isWaiting.value = true;
+    const response = await fetch(url, {
+        method: 'POST',
+        body: filter.value,
+        headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+    })
+    .then((r) => r.json());
+    
+    isWaiting.value = false;
+    requests.value = response;
 }
 
 import QrcodeVue from 'qrcode.vue'
@@ -171,11 +254,20 @@ import QrcodeVue from 'qrcode.vue'
                 <el-form-item label="Grant">
                     <el-input v-model="grant" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}"/>
                 </el-form-item>
+                <el-form-item label="UUID">
+                    <el-input v-model="uuid" type="text"/>
+                </el-form-item>
+                <el-form-item label="Filter">
+                    <el-input v-model="filter" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}"/>
+                </el-form-item>
             </el-collapse-item>
         </el-collapse>
         <el-form-item label="Actions">
             <el-button @click="generate">Generate</el-button>
             <el-button @click="remove">Delete</el-button>
+            <el-button @click="revoke">Revoke</el-button>
+            <el-button @click="unrevoke">Unrevoke</el-button>
+            <el-button @click="listcreds">List Credentials</el-button>
         </el-form-item>
         <qrcode-vue :value="requestUri" :size="300"></qrcode-vue>
         <el-form-item label="Status">

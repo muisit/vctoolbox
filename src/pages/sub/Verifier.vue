@@ -18,6 +18,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     if (timer.value) {
+        console.log('clearing timer on unmount');
         clearInterval(timer.value);
         timer.value = null;
     }
@@ -41,6 +42,7 @@ async function generate()
         requestId.value = response.state;
         requestUri.value = response.requestUri;
         checkUri.value = response.checkUri;
+        console.log(response);
 
         startTimer();
     }
@@ -81,10 +83,13 @@ function remove()
 function startTimer()
 {
     if (timer.value) {
+        console.log("clearing old timer");
         clearInterval(timer.value);
         timer.value = null;
     }
+    isWaiting.value = false;
 
+    console.log("starting timer ever 2 seconds");
     timer.value = setInterval(callCheckApi, 2000);
 }
 
@@ -94,7 +99,11 @@ const requests = ref<any>([]);
 
 async function callCheckApi()
 {
-    if (isWaiting.value === true) return;
+    console.log("calling check url");
+    if (isWaiting.value === true) {
+        console.log('not polling, because we are still waiting');
+        return;
+    }
 
     isWaiting.value = true;
     const response = await fetch(checkUri.value, {
@@ -107,6 +116,7 @@ async function callCheckApi()
     requests.value = response.result;
 
     if (response.status == 'RESPONSE_RECEIVED') {
+        console.log('clearing timer after receiving response');
         clearInterval(timer.value);
         timer.value = null;
     }
