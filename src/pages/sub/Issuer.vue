@@ -6,6 +6,7 @@ const agent = ref('');
 const token = ref('');
 const credentials = ref('');
 const data = ref('');
+const meta = ref('');
 const grant = ref('');
 const requestId = ref('');
 const requestUri = ref('');
@@ -36,11 +37,14 @@ async function generate()
     if (creds[0].indexOf(',') > 0) {
         creds = creds[0].split(',').filter((v) => v != '');
     }
-    const request = {
+    const request:any = {
         credentials: creds,
         grants: JSON.parse(grant.value),
         credentialDataSupplierInput: JSON.parse(data.value)
     };
+    if (meta.value != '') {
+        request.credentialMetadata = JSON.parse(meta.value);
+    }
 
     requests.value = [];
     const response = await fetch(url, {
@@ -68,6 +72,7 @@ function add()
         token: token.value,
         credential: credentials.value,
         data: data.value,
+        meta: meta.value,
         grant: grant.value,
         statlist: statlist.value,
         filter: filter.value
@@ -94,6 +99,7 @@ function remove()
         agent.value = '';
         grant.value = '';
         data.value = '';
+        meta.value = '';
         credentials.value = '';
         statlist.value = '';
         uuid.value = '';
@@ -150,6 +156,7 @@ function selectPreset()
         agent.value = item.agent;
         grant.value = item.grant;
         data.value = item.data;
+        meta.value = item.meta;
         credentials.value = item.credential;
         statlist.value = item.statlist;
         filter.value = item.filter;
@@ -253,6 +260,9 @@ import QrcodeVue from 'qrcode.vue'
                 </el-form-item>
                 <el-form-item label="Grant">
                     <el-input v-model="grant" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}"/>
+                </el-form-item>
+                <el-form-item label="Metadata">
+                    <el-input v-model="meta" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}"/>
                 </el-form-item>
                 <el-form-item label="UUID">
                     <el-input v-model="uuid" type="text"/>
