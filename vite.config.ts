@@ -1,6 +1,5 @@
 import { defineConfig  } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import * as path from 'path';
 
 export default ({mode}) => {
@@ -30,7 +29,6 @@ export default ({mode}) => {
             include: ['dayjs/plugin/isoWeek']
         },
         plugins: [
-            nodePolyfills(),
             vue()
         ],
         define: {

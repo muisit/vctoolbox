@@ -44,12 +44,15 @@ async function decodeValue() {
             // see if we can find a signature key
             let key:CryptoKey|null = null;
             try {
+                console.log('resolving iss', payload.iss);
                 key = await Factory.resolve(payload.iss);
             }
             catch (e:any) {
                 console.log(e);
                 try {
-                    key = await Factory.resolve(header.kid);
+                    console.log('resolving kid', header.kid);
+                    const kid = (header.kid ?? '').split('#')[0];
+                    key = await Factory.resolve(kid);
                 }
                 catch (e) {
                     console.log(e);
@@ -57,6 +60,7 @@ async function decodeValue() {
             }
 
             if (key !== null) {
+                console.log('trying to verify using ', header.alg);
                 if (!key.verify(header.alg, fromString(parts[3], 'base64url'), fromString(parts[1] + '.' + parts[2], 'utf-8'))) {
                     message.value = "Key found, but signature not validated";
                 }

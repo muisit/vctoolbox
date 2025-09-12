@@ -10,8 +10,8 @@ import './styles/index.scss';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
-import { Buffer } from 'buffer';
-window.Buffer = Buffer;
+//import { Buffer } from 'buffer';
+//window.Buffer = Buffer;
 
 const pinia = createPinia();
 var app= createApp(MainPage);
