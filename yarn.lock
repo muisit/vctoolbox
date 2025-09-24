@@ -94,7 +94,7 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz#6912b00d2c631c0d15ce1a7ab57cd657f2a8f8ba"
   integrity sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==
 
-"@muisit/cryptokey@^1.1.1":
+"@muisit/cryptokey@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@muisit/cryptokey/-/cryptokey-1.2.2.tgz#d6f07d8335d111142eb113cbd991710dd5a43ea1"
   integrity sha512-WZlngtraeLAMsuvObiNfErbJsTl13QC+uGT5jfdZTpIupEIfTyf0IryTx6RQwoLTCIlpmHJch8mLzS/rDQAyDg==
@@ -103,6 +103,13 @@
     did-resolver "^4.1.0"
     jose "^6.0.11"
     multiformats "^13.3.2"
+
+"@muisit/simplejwt@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@muisit/simplejwt/-/simplejwt-1.0.2.tgz#e241c314bb97778555a9e7e8c6d7f6821005bf2b"
+  integrity sha512-kzIAtA3fg+l2yVR1Q3VopO8JqO08k3q/J3JzJfX/QuLuzT7ideQK8DNLovTpThN+Dx0KShWc2J45poIQCNQpHg==
+  dependencies:
+    "@muisit/cryptokey" "^1.2.2"
 
 "@multiformats/base-x@^4.0.1":
   version "4.0.1"
@@ -2267,10 +2274,10 @@ vite-plugin-full-reload@^1.0.1:
     picocolors "^1.0.0"
     picomatch "^2.3.1"
 
-vite-plugin-node-polyfills@^0.23.0:
-  version "0.23.1"
-  resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.23.1.tgz#35d9bb7a3f4f4743a48a33ba0a09076432c3186a"
-  integrity sha512-hR2YlaMqVo2f/0w6V9YgaeKsIy8z5gEsMFHX8MQlh8ATEAbfI4EWjE6qnCvkZ9lyaXKoJD2rAwL/up8/Rzsjkg==
+vite-plugin-node-polyfills@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.24.0.tgz#4a2e984bba134017fc88cace0149cf8afdb50b54"
+  integrity sha512-GA9QKLH+vIM8NPaGA+o2t8PDfFUl32J8rUp1zQfMKVJQiNkOX4unE51tR6ppl6iKw5yOrDAdSH7r/UIFLCVhLw==
   dependencies:
     "@rollup/plugin-inject" "^5.0.5"
     node-stdlib-browser "^1.2.0"

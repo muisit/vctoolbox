@@ -1,6 +1,7 @@
 import { defineConfig  } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default ({mode}) => {
     return defineConfig({
@@ -30,11 +31,13 @@ export default ({mode}) => {
             include: ['dayjs/plugin/isoWeek']
         },
         plugins: [
-            vue()
+            vue(),
+            nodePolyfills(),
         ],
         define: {
             // enable hydration mismatch details in production build
-            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true'
+            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'true',
+            global: {}
           }
     });
 }

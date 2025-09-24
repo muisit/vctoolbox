@@ -2,23 +2,44 @@
 import { ref } from 'vue';
 import { fromString, toString } from "uint8arrays";
 import { CryptoKey, Factory } from '@muisit/cryptokey';
+import { JWT } from '@muisit/simplejwt';
 
 const inputvalue = ref('');
 const headervalue = ref('');
 const payloadvalue = ref('');
 const signaturevalue = ref('');
+const didvalue = ref('');
 const message = ref('');
 
-function encodeValue() {
+async function encodeValue() {
     message.value = '';
     try {
-        const recodedHeader = JSON.stringify(JSON.parse(headervalue.value));
-        const headerpart = toString(fromString(recodedHeader, 'utf-8'), 'base64url');
+        const jwt = new JWT();
+        jwt.header = JSON.parse(headervalue.value);
+        jwt.payload = JSON.parse(payloadvalue.value);
 
-        const recodedPayload = JSON.stringify(JSON.parse(payloadvalue.value));
-        const payloadpart = toString(fromString(recodedPayload, 'utf-8'), 'base64url');
-
-        inputvalue.value = headerpart + '.' + payloadpart + '.' + signaturevalue.value;
+        if (didvalue.value != '') {
+            try {
+                console.log('resolving didvalue ', didvalue.value);
+                const els = didvalue.value.split(':');
+                const ckey = await Factory.createFromType(els[0], els[1]);
+                if (ckey) {
+                    console.log('signing jwt using', ckey.algorithms()[0]);
+                    await jwt.sign(ckey, ckey.algorithms()[0]);
+                    console.log('jwt signature is ', jwt.signaturePart);
+                }
+            }
+            catch (e:any) {
+                message.value = 'Caught error creating signature: ' + e;
+            }
+        }
+        else {
+            jwt.headerPart = jwt.encodeToBase64(jwt.header || {});
+            jwt.payloadPart = jwt.encodeToBase64(jwt.payload || {});
+            jwt.signaturePart = signaturevalue.value;
+        }
+        inputvalue.value = jwt.headerPart + '.' + jwt.payloadPart + '.' + jwt.signaturePart;
+        signaturevalue.value = jwt.signaturePart;
     }
     catch (e:any) {
         message.value = e.toString();
@@ -93,6 +114,9 @@ async function decodeValue() {
             </el-form-item>
             <el-form-item label="Signature">
                 <el-input v-model="signaturevalue" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}" @blur="encodeValue"/>
+            </el-form-item>
+            <el-form-item label="Private key">
+                <el-input v-model="didvalue" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}" @blur="encodeValue"/>
             </el-form-item>
             <el-form-item label="Message">
                 <el-input v-model="message" :autosize="{minRows:3}" disabled/>
