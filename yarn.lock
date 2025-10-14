@@ -94,6 +94,16 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz#6912b00d2c631c0d15ce1a7ab57cd657f2a8f8ba"
   integrity sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==
 
+"@muisit/cryptokey@1.2.3":
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/@muisit/cryptokey/-/cryptokey-1.2.3.tgz#f1874cb4974ef0c79fd28c93b38ca3f8aa2a0c46"
+  integrity sha512-dfEY5W1DgAMDY3Hj0bRq6FciFv8fpMntBgBY7R6XX4liyulNh1FHEX8a/XAEszpSOfvPAp4wxaYvZ2udXatmQg==
+  dependencies:
+    did-jwt "^8.0.11"
+    did-resolver "^4.1.0"
+    jose "^6.0.11"
+    multiformats "^13.3.2"
+
 "@muisit/cryptokey@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@muisit/cryptokey/-/cryptokey-1.2.2.tgz#d6f07d8335d111142eb113cbd991710dd5a43ea1"
