@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onUnmounted } from 'vue';
+import { useTokenStore } from '@/stores/token';
 
-const label = ref('');
-const agent = ref('');
-const token = ref('');
+const store = useTokenStore();
+const preset = "issuer";
+
 const credentials = ref('');
 const data = ref('');
 const meta = ref('');
 const grant = ref('');
 const requestId = ref('');
 const requestUri = ref('');
-const allLabels = ref<string[]>([]);
 const uuid = ref('');
 const statlist = ref('');
 const filter = ref('');
 const timer = ref<any>(null);
-
-onMounted(() => {
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets") || "{}");
-    allLabels.value = Object.keys(allItems);
-})
 
 onUnmounted(() => {
     if (timer.value) {
@@ -28,10 +23,23 @@ onUnmounted(() => {
     }
 })
 
+function updateDataInStore()
+{
+    const dataPackage = {
+        credential: credentials.value,
+        data: data.value,
+        meta: meta.value,
+        grant: grant.value,
+        statlist: statlist.value,
+        filter: filter.value
+    };
+    store.update(preset, store.agent, dataPackage);
+}
+
 async function generate()
 {
-    add();
-    const url = agent.value + '/api/create-offer';
+    updateDataInStore();
+    const url = store.url + '/api/create-offer';
     uuid.value = '';
     let creds = [credentials.value];
     if (creds[0].indexOf(',') > 0) {
@@ -42,8 +50,13 @@ async function generate()
         grants: JSON.parse(grant.value),
         credentialDataSupplierInput: JSON.parse(data.value)
     };
-    if (meta.value != '') {
-        request.credentialMetadata = JSON.parse(meta.value);
+    if (meta.value && meta.value.trim() != '') {
+        try {
+            request.credentialMetadata = JSON.parse(meta.value);
+        }
+        catch (e) {
+            // skip the metadata
+        }
     }
 
     requests.value = [];
@@ -52,7 +65,7 @@ async function generate()
         body: JSON.stringify(request),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
+            "Authorization": "Bearer " + store.token
         }
     }).then((r) => r.json()).catch((e) => { console.error(e); return null; });
 
@@ -61,49 +74,6 @@ async function generate()
         requestUri.value = response.uri;
 
         startTimer();
-    }
-}
-
-function add()
-{
-    const dataPackage = {
-        label: label.value,
-        agent: agent.value,
-        token: token.value,
-        credential: credentials.value,
-        data: data.value,
-        meta: meta.value,
-        grant: grant.value,
-        statlist: statlist.value,
-        filter: filter.value
-    };
-    localStorage.setItem(label.value, JSON.stringify(dataPackage));
-
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets") || "{}");
-    allItems[label.value] = label.value;
-    localStorage.setItem("toolbox_presets", JSON.stringify(allItems));
-    allLabels.value = Object.keys(allItems);
-}
-
-function remove()
-{
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets") || "{}");
-    if (allItems[label.value]) {
-        delete allItems[label.value];
-        localStorage.setItem("toolbox_presets", JSON.stringify(allItems));
-        localStorage.removeItem(label.value);
-        allLabels.value = Object.keys(allItems);
-
-        label.value = '';
-        token.value = '';
-        agent.value = '';
-        grant.value = '';
-        data.value = '';
-        meta.value = '';
-        credentials.value = '';
-        statlist.value = '';
-        uuid.value = '';
-        filter.value = '';
     }
 }
 
@@ -126,12 +96,12 @@ async function callCheckApi()
 {
     if (isWaiting.value === true) return;
 
-    const url = agent.value + '/api/check-offer';
+    const url = store.url + '/api/check-offer';
     isWaiting.value = true;
     const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ id: requestId.value }),
-            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + store.token}
         })
         .then((r) => r.json());
     isWaiting.value = false;
@@ -145,26 +115,22 @@ async function callCheckApi()
     }
 }
 
-const selectedPreset = ref('');
 function selectPreset()
 {
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets") || "{}");
-    if (allItems[selectedPreset.value]) {
-        const item = JSON.parse(localStorage.getItem(selectedPreset.value) || '{}');
-        label.value = item.label;
-        token.value = item.token;
-        agent.value = item.agent;
-        grant.value = item.grant;
-        data.value = item.data;
-        meta.value = item.meta;
-        credentials.value = item.credential;
-        statlist.value = item.statlist;
-        filter.value = item.filter;
+    const item = store.load(preset, store.agent);
+    if (item && Object.keys(item).length > 0) {
+        grant.value = item.grant ?? '{}';
+        data.value = item.data || '{}';
+        meta.value = item.meta || '';
+        credentials.value = item.credential || '';
+        statlist.value = item.statlist || '';
+        filter.value = item.filter || '';
     }
 }
 
 async function revoke()
 {
+    updateDataInStore();
     if (isWaiting.value) {
         return;
     }
@@ -172,15 +138,14 @@ async function revoke()
         status.value = 'No credential UUID found';
     }
     else {
-        const url = agent.value + '/api/revoke-credential';
+        const url = store.url + '/api/revoke-credential';
         isWaiting.value = true;
         const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ uuid: uuid.value, state: 'revoke', list: statlist.value }),
-            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + store.token}
         })
         .then((r) => r.json());
-
     
         isWaiting.value = false;
         status.value = response.status;
@@ -190,6 +155,7 @@ async function revoke()
 
 async function unrevoke()
 {
+    updateDataInStore();
     if (isWaiting.value) {
         return;
     }
@@ -197,34 +163,33 @@ async function unrevoke()
         status.value = 'No credential UUID found';
     }
     else {
-        const url = agent.value + '/api/revoke-credential';
+        const url = store.url + '/api/revoke-credential';
         isWaiting.value = true;
         const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ uuid: uuid.value, state: 'unrevoke', list: statlist.value }),
-            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+            headers: {"Content-Type": "application/json", "Authorization": "Bearer " + store.token}
         })
         .then((r) => r.json());
 
-    
         isWaiting.value = false;
         status.value = response.status;
         requests.value = [response];
     }
 }
 
-
 async function listcreds()
 {
+    updateDataInStore();
     if (isWaiting.value) {
         return;
     }
-    const url = agent.value + '/api/list-credentials';
+    const url = store.url + '/api/list-credentials';
     isWaiting.value = true;
     const response = await fetch(url, {
         method: 'POST',
         body: filter.value,
-        headers: {"Content-Type": "application/json", "Authorization": "Bearer " + token.value}
+        headers: {"Content-Type": "application/json", "Authorization": "Bearer " + store.token}
     })
     .then((r) => r.json());
     
@@ -233,25 +198,14 @@ async function listcreds()
 }
 
 import QrcodeVue from 'qrcode.vue'
+import PresetHeader from '@/components/PresetHeader.vue';
 </script>
 <template>
     <el-form label-position="left" label-width="auto">
-        <el-form-item label="Presets">
-            <el-select @change="selectPreset" v-model="selectedPreset">
-                <el-option v-for="item in allLabels" :key="item" :value="item">{{ item }}</el-option>
-            </el-select>
-        </el-form-item>
+        <div><h1>Issuer</h1><br/></div>
+        <PresetHeader @on-select="selectPreset" :preset="preset" />
         <el-collapse>
             <el-collapse-item title="Details">
-                <el-form-item label="Label">
-                    <el-input v-model="label" type="text"/>
-                </el-form-item>
-                <el-form-item label="Agent">
-                    <el-input v-model="agent" type="text"/>
-                </el-form-item>
-                <el-form-item label="Token">
-                    <el-input v-model="token" type="text"/>
-                </el-form-item>
                 <el-form-item label="Credential">
                     <el-input v-model="credentials" type="text"/>
                 </el-form-item>
@@ -274,7 +228,6 @@ import QrcodeVue from 'qrcode.vue'
         </el-collapse>
         <el-form-item label="Actions">
             <el-button @click="generate">Generate</el-button>
-            <el-button @click="remove">Delete</el-button>
             <el-button @click="revoke">Revoke</el-button>
             <el-button @click="unrevoke">Unrevoke</el-button>
             <el-button @click="listcreds">List Credentials</el-button>

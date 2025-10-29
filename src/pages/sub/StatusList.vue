@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { useTokenStore } from '@/stores/token';
+import { ref, onUnmounted } from 'vue';
 
-const label = ref('');
-const agent = ref('');
-const token = ref('');
+const store = useTokenStore();
+const preset = "statuslist";
+
 const date = ref('');
 const index = ref('');
 const lst = ref('');
 const value = ref('');
 const mask = ref('-1');
 const output = ref('');
-const allLabels = ref<string[]>([]);
 const timer = ref<any>(null);
-
-onMounted(() => {
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets_status") || "{}");
-    allLabels.value = Object.keys(allItems);
-})
 
 onUnmounted(() => {
     if (timer.value) {
@@ -28,7 +23,7 @@ onUnmounted(() => {
 async function reserve()
 {
     add();
-    const url = agent.value + '/api/index';
+    const url = store.url + '/api/index';
     const request = {
         expirationDate: date.value
     };
@@ -38,7 +33,7 @@ async function reserve()
         body: JSON.stringify(request),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
+            "Authorization": "Bearer " + store.token
         }
     }).then((r) => r.json()).catch((e) => { console.error(e); return null; });
 
@@ -56,7 +51,7 @@ async function reserve()
 async function revoke()
 {
     add();
-    const url = agent.value + '/api/revoke';
+    const url = store.url + '/api/revoke';
     const request = {
         list: lst.value,
         index: index.value,
@@ -68,7 +63,7 @@ async function revoke()
         body: JSON.stringify(request),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
+            "Authorization": "Bearer " + store.token
         }
     }).then((r) => r.json()).catch((e) => { console.error(e); return null; });
 
@@ -80,7 +75,7 @@ async function revoke()
 async function setstatus()
 {
     add();
-    const url = agent.value + '/api/status';
+    const url = store.url + '/api/status';
     const request = {
         list: lst.value,
         index: index.value,
@@ -93,7 +88,7 @@ async function setstatus()
         body: JSON.stringify(request),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
+            "Authorization": "Bearer " + store.token
         }
     }).then((r) => r.json()).catch((e) => { console.error(e); return null; });
 
@@ -107,13 +102,13 @@ async function getstatus()
     add();
     const pathvalues = lst.value.split('/');
     const listIndex = parseInt(pathvalues[pathvalues.length - 1]);
-    const url = agent.value + '/api/status/' + listIndex + '/' + index.value;
+    const url = store.url + '/api/status/' + listIndex + '/' + index.value;
 
     const response = await fetch(url, {
         method:'GET',
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
+            "Authorization": "Bearer " + store.token
         }
     }).then((r) => r.json()).catch((e) => { console.error(e); return null; });
 
@@ -137,53 +132,19 @@ async function credential()
 function add()
 {
     const dataPackage = {
-        label: label.value,
-        agent: agent.value,
-        token: token.value,
         date: date.value,
         index: index.value,
         value: value.value,
         mask: mask.value,
         lst: lst.value
     };
-    localStorage.setItem(label.value, JSON.stringify(dataPackage));
-
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets_status") || "{}");
-    allItems[label.value] = label.value;
-    localStorage.setItem("toolbox_presets_status", JSON.stringify(allItems));
-    allLabels.value = Object.keys(allItems);
+    store.update(preset, store.agent, dataPackage);
 }
 
-function remove()
-{
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets_status") || "{}");
-    if (allItems[label.value]) {
-        delete allItems[label.value];
-        localStorage.setItem("toolbox_presets_status", JSON.stringify(allItems));
-        localStorage.removeItem(label.value);
-        allLabels.value = Object.keys(allItems);
-
-        label.value = '';
-        token.value = '';
-        agent.value = '';
-        date.value = '';
-        index.value = '';
-        value.value = '';
-        output.value = '';
-        lst.value = '';
-        mask.value = '';
-    }
-}
-
-const selectedPreset = ref('');
 function selectPreset()
 {
-    const allItems = JSON.parse(localStorage.getItem("toolbox_presets_status") || "{}");
-    if (allItems[selectedPreset.value]) {
-        const item = JSON.parse(localStorage.getItem(selectedPreset.value) || '{}');
-        label.value = item.label;
-        token.value = item.token;
-        agent.value = item.agent;
+    const item = store.load(preset, store.agent);
+    if (item && Object.keys(item).length > 0) {
         value.value = item.value;
         date.value = item.date;
         index.value = item.index;
@@ -195,22 +156,10 @@ function selectPreset()
 </script>
 <template>
     <el-form label-position="left" label-width="auto">
-        <el-form-item label="Presets">
-            <el-select @change="selectPreset" v-model="selectedPreset">
-                <el-option v-for="item in allLabels" :key="item" :value="item">{{ item }}</el-option>
-            </el-select>
-        </el-form-item>
+        <div><h1>Status List</h1><br/></div>
+        <PresetHeader @on-select="selectPreset" :preset="preset" />
         <el-collapse>
             <el-collapse-item title="Details">
-                <el-form-item label="Label">
-                    <el-input v-model="label" type="text"/>
-                </el-form-item>
-                <el-form-item label="Agent">
-                    <el-input v-model="agent" type="text"/>
-                </el-form-item>
-                <el-form-item label="Token">
-                    <el-input v-model="token" type="text"/>
-                </el-form-item>
                 <el-form-item label="List">
                     <el-input v-model="lst" type="text"/>
                 </el-form-item>
