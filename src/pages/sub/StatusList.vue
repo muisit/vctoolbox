@@ -120,7 +120,7 @@ async function getstatus()
 async function credential()
 {
     add();
-    const response = await fetch(lst.value, {
+    const response = await fetch(store.url + '/' + lst.value, {
         method:'GET',
     });
 
@@ -153,6 +153,7 @@ function selectPreset()
     }
 }
 
+import PresetHeader from '@/components/PresetHeader.vue';
 </script>
 <template>
     <el-form label-position="left" label-width="auto">

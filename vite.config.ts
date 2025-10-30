@@ -1,7 +1,6 @@
 import { defineConfig  } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
-//import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default ({mode}) => {
     return defineConfig({
@@ -11,7 +10,8 @@ export default ({mode}) => {
             alias: {
             '~bootstrap': path.resolve(__dirname, 'node_modules/bootstrap'),
             '@': path.resolve(__dirname, 'src'),
-//            'crypto':'crypto-browserify'
+            crypto: path.resolve('src/crypto-browser.ts'),
+            'node:crypto': path.resolve('src/crypto-browser.ts'),
             },
         },
         build: {
@@ -28,11 +28,11 @@ export default ({mode}) => {
             },
         },
         optimizeDeps: {
-            include: ['dayjs/plugin/isoWeek']
+            include: ['dayjs/plugin/isoWeek'],
+            exclude: ['crypto']
         },
         plugins: [
-            vue(),
-            //nodePolyfills(),
+            vue()
         ],
         define: {
             // enable hydration mismatch details in production build

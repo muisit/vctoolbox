@@ -18,7 +18,7 @@
     "dependencies": {
         "@eonasdan/tempus-dominus": "^6.2.4",
         "@fortawesome/fontawesome-free": "^6.4.0",
-        "@muisit/cryptokey": "1.2.3",
+        "@muisit/cryptokey": "^1.2.3",
         "@muisit/simplejwt": "^1.0.2",
         "@noble/hashes": "^1.8.0",
         "@sd-jwt/core": "^0.10.0",
@@ -31,8 +31,10 @@
         "pinia": "^2.0.23",
         "qrcode.vue": "^3.6.0",
         "reset-css": "^5.0.1",
+        "rollup-plugin-node-polyfills": "^0.2.1",
         "typescript": "^5.7.3",
         "uint8arrays": "4.0.10",
+        "vite-plugin-filter-replace": "^0.1.14",
         "vue": "^3.2.36"
     }
 }

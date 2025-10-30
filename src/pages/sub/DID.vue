@@ -15,6 +15,7 @@ async function encodeValue() {
     try {
         // if the input string happens to be json, minify it first
         const key = await Factory.createFromJWK(JSON.parse(outputvalue.value));
+        enctype.value = key.keyType;
         if (keytype.value == 'did:key') {
             inputvalue.value = await Factory.toDIDKey(key);
         }
@@ -37,6 +38,7 @@ async function decodeValue() {
             keytype.value = inputvalue.value.startsWith('did:key:') ? 'did:key' :
                                 (inputvalue.value.startsWith('did:jwk:') ? 'did:jwk' : 
                             (inputvalue.value.startsWith('did:web:') ? 'did:web' : ''));
+            enctype.value = key.keyType;
             outputvalue.value = JSON.stringify(await key.toJWK(), null, 4);
         }
         else {
@@ -69,9 +71,6 @@ async function create()
             <el-form-item label="JWK">
                 <el-input v-model="outputvalue" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}" @blur="encodeValue"/>
             </el-form-item>
-            <el-form-item label="Private key">
-                <el-input v-model="privkey" :autosize="{minRows:3}" disabled/>
-            </el-form-item>
             <el-form-item label="Type">
                 <el-select v-model="keytype">
                     <el-option value="">choose</el-option>
@@ -81,7 +80,7 @@ async function create()
                 </el-select>
             </el-form-item>
             <el-form-item label="Enc">
-                <el-select v-model="enctype">
+                <el-select v-model="enctype" disabled>
                     <el-option value="">choose</el-option>
                     <el-option value="Secp256r1">Secp256R1/P-256</el-option>
                     <el-option value="Secp256k1">Secp256K1</el-option>
@@ -92,7 +91,6 @@ async function create()
             <el-form-item label="Message">
                 <el-input v-model="message" type="textarea" :autosize="{minRows:3}" disabled/>
             </el-form-item>
-            <el-button @click="create">Create</el-button>
         </el-form>    
     </div>
 </template>
