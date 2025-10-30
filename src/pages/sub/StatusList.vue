@@ -43,8 +43,12 @@ async function reserve()
         }
         if (response.url) {
             lst.value = response.url;
+            if (lst.value.startsWith(store.url)) {
+                lst.value = lst.value.substring(store.url.length + 1); // skip the url plus path delimiter
+            }
         }
         output.value = JSON.stringify(response, null, 4);
+        value.value = '0';
     }
 }
 
@@ -53,9 +57,9 @@ async function revoke()
     add();
     const url = store.url + '/api/revoke';
     const request = {
-        list: lst.value,
+        list: store.url + '/' + lst.value,
         index: index.value,
-        status: parseInt(value.value) ? 'revoke' : 'unrevoke'
+        status: parseInt(value.value) ? 'unrevoke' : 'revoke'
     };
 
     const response = await fetch(url, {
@@ -69,6 +73,7 @@ async function revoke()
 
     if (response) {
         output.value = JSON.stringify(response, null, 4);
+        value.value = parseInt(value.value) ? '0' : '1';
     }
 }
 
@@ -77,7 +82,7 @@ async function setstatus()
     add();
     const url = store.url + '/api/status';
     const request = {
-        list: lst.value,
+        list: store.url + '/' + lst.value,
         index: index.value,
         status: parseInt(value.value),
         mask: parseInt(mask.value)
@@ -100,9 +105,7 @@ async function setstatus()
 async function getstatus()
 {
     add();
-    const pathvalues = lst.value.split('/');
-    const listIndex = parseInt(pathvalues[pathvalues.length - 1]);
-    const url = store.url + '/api/status/' + listIndex + '/' + index.value;
+    const url = store.url + '/api/status/' + lst.value + '/' + index.value;
 
     const response = await fetch(url, {
         method:'GET',
@@ -114,6 +117,15 @@ async function getstatus()
 
     if (response) {
         output.value = JSON.stringify(response, null, 4);
+        if (response.status === true) {
+            value.value = '1';
+        }
+        else if (response.status === false) {
+            value.value = '0';
+        }
+        else {
+            value.value = '' + response.status;
+        }
     }
 }
 
@@ -161,6 +173,9 @@ import PresetHeader from '@/components/PresetHeader.vue';
         <PresetHeader @on-select="selectPreset" :preset="preset" />
         <el-collapse>
             <el-collapse-item title="Details">
+                <el-form-item label="URL">
+                    <el-input v-model="store.url" type="text" disabled/>
+                </el-form-item>
                 <el-form-item label="List">
                     <el-input v-model="lst" type="text"/>
                 </el-form-item>
@@ -180,7 +195,7 @@ import PresetHeader from '@/components/PresetHeader.vue';
         </el-collapse>
         <el-form-item label="Actions">
             <el-button @click="reserve">Reserve</el-button>
-            <el-button @click="revoke">{{ parseInt(value) ? 'Revoke' : 'Unrevoke' }}</el-button>
+            <el-button @click="revoke">{{ parseInt(value) ? 'Unrevoke' : 'Revoke' }}</el-button>
             <el-button @click="setstatus">Set</el-button>
             <el-button @click="getstatus">Get</el-button>
             <el-button @click="credential">Credential</el-button>

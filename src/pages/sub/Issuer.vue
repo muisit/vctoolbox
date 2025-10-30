@@ -206,6 +206,9 @@ import PresetHeader from '@/components/PresetHeader.vue';
         <PresetHeader @on-select="selectPreset" :preset="preset" />
         <el-collapse>
             <el-collapse-item title="Details">
+                <el-form-item label="URL">
+                    <el-input v-model="store.url" type="text" disabled/>
+                </el-form-item>
                 <el-form-item label="Credential">
                     <el-input v-model="credentials" type="text"/>
                 </el-form-item>
