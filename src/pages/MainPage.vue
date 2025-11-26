@@ -11,6 +11,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
     case 'base58btc':
     case 'base64':
     case 'base64url':
+    case 'urlencode':
     case 'did':
     case 'issuer':
     case 'verifier':
@@ -29,6 +30,7 @@ import Sha256 from './sub/Sha256.vue';
 import Base58btc from './sub/Base58btc.vue';
 import Base64 from './sub/Base64.vue';
 import Base64Url from './sub/Base64Url.vue';
+import UrlEncode from './sub/UrlEncode.vue';
 import JWT from './sub/JWT.vue';
 import DID from './sub/DID.vue';
 import Issuer from './sub/Issuer.vue';
@@ -55,6 +57,7 @@ import StatusList from './sub/StatusList.vue';
                         <el-menu-item index="base58btc">Base58btc</el-menu-item>
                         <el-menu-item index="base64">Base64</el-menu-item>
                         <el-menu-item index="base64url">Base64 URL</el-menu-item>
+                        <el-menu-item index="urlencode">URLEncode</el-menu-item>
                         <el-menu-item index="jwt">JWT</el-menu-item>
                         <el-menu-item index="sdjwt">SDJWT</el-menu-item>
                         <el-menu-item index="did">DID</el-menu-item>
@@ -70,6 +73,7 @@ import StatusList from './sub/StatusList.vue';
                 <Base58btc v-if="pageName == 'base58btc'" />
                 <Base64 v-if="pageName == 'base64'" />
                 <Base64Url v-if="pageName == 'base64url'" />
+                <UrlEncode v-if="pageName == 'urlencode'" />
                 <JWT v-if="pageName == 'jwt'" />
                 <DID v-if="pageName == 'did'" />
                 <Issuer v-if="pageName == 'issuer'" />
