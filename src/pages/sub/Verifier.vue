@@ -6,6 +6,7 @@ const store = useTokenStore();
 const preset = "verifier";
 
 const presentation = ref('');
+const dcql = ref('');
 const requestId = ref('');
 const requestUri = ref('');
 const checkUri = ref('');
@@ -21,7 +22,8 @@ onUnmounted(() => {
 function updateDataInStore()
 {
     const dataPackage = {
-        presentation: presentation.value
+        presentation: presentation.value,
+        dcql: dcql.value
     };
     store.update(preset, store.agent, dataPackage);
 }
@@ -29,11 +31,31 @@ function updateDataInStore()
 async function generate()
 {
     updateDataInStore();
-    const url = store.url + '/api/create-offer/' + presentation.value;
+    let url:string;
+    let body = '{}';
+    if (dcql.value && dcql.value.length > 0) {
+        try {
+            const query = JSON.stringify(JSON.parse(dcql.value), null, 2);
+            dcql.value = query;
+        }
+        catch (e) {
+            alert("Query is not a proper JSON");
+            return;
+        }
+        url = store.url + '/api/create-dcql-offer';
+        body = JSON.stringify({dcql: dcql.value});
+    }
+    else if(presentation.value && presentation.value.length) {
+        url = store.url + '/api/create-offer/' + presentation.value;
+    }
+    else {
+        alert("Enter one of presentation or query");
+        return false;
+    }
 
     const response = await fetch(url, {
         method:'POST',
-        body: "{}",
+        body: body,
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + store.token
@@ -96,6 +118,7 @@ function selectPreset()
     const item = store.load(preset, store.agent);
     if (item && Object.keys(item).length > 0) {
         presentation.value = item.presentation ?? '';
+        dcql.value = item.dcql ?? '';
     }
 }
 
@@ -113,6 +136,9 @@ import PresetHeader from '@/components/PresetHeader.vue';
                 </el-form-item>
                 <el-form-item label="Presentation">
                     <el-input v-model="presentation" type="text"/>
+                </el-form-item>
+                <el-form-item label="Query">
+                    <el-input v-model="dcql" :rows="5" type="textarea" :autosize="{minRows:5, maxRows:15}"/>
                 </el-form-item>
             </el-collapse-item>
         </el-collapse>
