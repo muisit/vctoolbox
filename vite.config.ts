@@ -1,6 +1,7 @@
 import { defineConfig  } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import * as path from 'path';
+import packageJson from "./package.json";
 
 export default ({mode}) => {
     return defineConfig({
@@ -40,6 +41,7 @@ export default ({mode}) => {
             'process.version': null,
             'process.env': {},
             '_vm._self._c': {},
+            'import.meta.env.PACKAGE_VERSION': JSON.stringify(packageJson.version)
           }
     });
 }

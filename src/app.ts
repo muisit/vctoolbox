@@ -14,7 +14,8 @@ import { createPinia } from 'pinia';
 //window.Buffer = Buffer;
 
 const pinia = createPinia();
-var app= createApp(MainPage);
+var app = createApp(MainPage);
+app.config.globalProperties.versionNumber = import.meta.env.PACKAGE_VERSION
 app.use(pinia);
 app.use(ElementPlus);
 app.mount('#app');

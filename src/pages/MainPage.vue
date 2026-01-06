@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { getCurrentInstance, ref } from 'vue';
 
+const version = getCurrentInstance()?.appContext.config.globalProperties.versionNumber;
 const pageName = ref('main');
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key);
@@ -40,7 +41,7 @@ import StatusList from './sub/StatusList.vue';
 </script>
 <template>
     <el-container class="main">
-        <el-header></el-header>
+        <el-header><div class='version'>{{ version }}</div></el-header>
         <el-container>
             <el-aside>
                 <el-menu
